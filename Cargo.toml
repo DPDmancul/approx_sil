@@ -1,0 +1,13 @@
+[package]
+name = "approx_sil"
+version = "0.1.0"
+edition = "2021"
+authors = ["Davide Peressoni"]
+license = "Apache-2.0"
+description = "Implementation of Altieri, F., Pietracaprina, A., Pucci, G., & Vandin, F. (2021). Scalable distributed approximation of internal measures for clustering evaluation. In Proceedings of the 2021 SIAM International Conference on Data Mining (SDM) (pp. 648-656). Society for Industrial and Applied Mathematics."
+repository = "https://gitlab.com/DPDmancul/approx_sil"
+
+[dependencies]
+rand = "0.8.4"
+rand_distr = "0.4.2"
+
