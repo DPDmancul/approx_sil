@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2022 Davide Peressoni
  *
@@ -14,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 
 use rand_distr::{Bernoulli, Distribution};
 
@@ -36,9 +34,7 @@ impl<const N: usize> Clustering<N> {
             .iter()
             .map(|c| {
                 i += 1;
-                c.sum_sil(
-                    self.0[..i - 1].iter().chain(self.0[i..].iter()).collect(),
-                )
+                c.sum_sil(self.0[..i - 1].iter().chain(self.0[i..].iter()).collect())
             })
             .sum::<f64>()
             / self.0.iter().map(|c| c.0.len()).sum::<usize>() as f64
@@ -103,9 +99,13 @@ impl<const N: usize> From<[f64; N]> for Point<N> {
 
 impl<const N: usize> Point<N> {
     fn sil<'a, I: Iterator<Item = &'a Cluster<N>>>(&self, cluster: &Cluster<N>, others: I) -> f64 {
-        let a = cluster.w(self) / (cluster.0.len() - 1) as f64;
-        let b = others.fold(f64::MAX, |min, c| min.min(c.w(self) / c.0.len() as f64));
-        (b - a) / a.max(b)
+        if cluster.0.len() <= 1 {
+            0.
+        } else {
+            let a = cluster.w(self) / (cluster.0.len() - 1) as f64;
+            let b = others.fold(f64::MAX, |min, c| min.min(c.w(self) / c.0.len() as f64));
+            (b - a) / a.max(b)
+        }
     }
 
     pub fn d(&self, p: &Point<N>) -> f64 {

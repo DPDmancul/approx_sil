@@ -19,6 +19,7 @@ import System.Random.MWC
 import System.Random.MWC.Distributions
 import Control.Monad
 import Data.Function.Pointless
+import Data.Bitraversable
 
 type Point = [Double]
 newtype Cluster = UnsafeMkCluster ([Point], [(Point, Double)])
@@ -60,11 +61,13 @@ w p (UnsafeMkCluster (_, self)) = sum $ map (uncurry $ (/) . d p) self
 
 sil_point :: Cluster -> [Cluster] -> Point -> Double
 sil_point c others self = let
-  a = w self c / (fromIntegral . pred . length . points) c
-  b = foldl (min .^ liftM2 (/) (w self) (fromIntegral . length . points))
-    (1/0) -- infinite
-    others
-  in (b - a) / max a b
+    n = length $ points c
+  in if n <= 1 then 0 else let
+      a = w self c / (fromIntegral . pred) n
+      b = foldl (min .^ (uncurry (/) <$> bimapDefault (w self) fromIntegral))
+        (1/0) -- infinite
+        (filter ((0 /=) . snd)  $ map (ap (,) (length . points)) others)
+      in (b - a) / max a b
 
 d :: Point -> Point -> Double
 d = sqrt . sum .: zipWith ((**2) .: (-))
